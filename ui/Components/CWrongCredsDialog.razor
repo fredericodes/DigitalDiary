@@ -1,0 +1,22 @@
+@inject NavigationManager _navigationManager
+
+<MudDialog>
+    <DialogContent>
+        You have entered wrong credentials. Please try again!
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; }
+
+    void Submit() {
+        MudDialog.Close(DialogResult.Ok(true));
+        _navigationManager.NavigateTo("/", true);
+    }
+
+}

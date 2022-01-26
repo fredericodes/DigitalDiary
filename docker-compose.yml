@@ -1,16 +1,31 @@
 version: '3'
 
 services:
+
+  ui:
+    build:
+      context: .
+      dockerfile: ./ui/Docker/Dockerfile
+    ports:
+      - 7001:80
+    depends_on:
+      - api
+    restart: always
+
+  api:
+    build:
+      context: .
+      dockerfile: ./api/docker/Dockerfile
+    ports:
+      - 7000:8080
+    depends_on:
+      - redis
+    restart: always
+
   redis:
     image: redis:alpine
     ports:
       - 6379:6379
     volumes:
-      - ./util/configs/redis.conf:/redis.conf
+      - ./api/util/configs/redis.conf:/redis.conf
     command: [ "redis-server", "/redis.conf" ]
-  app:
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-    ports:
-      - 8080:8080

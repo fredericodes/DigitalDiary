@@ -1,0 +1,92 @@
+@inject NavigationManager _navigationManager
+@inject ILocalStorageService _localStorage
+@inject IHttpClientFactory _client;
+@inject IDialogService DialogService
+
+<MudContainer Class="mt-16" MaxWidth="MaxWidth.Medium">
+    <MudText Typo="Typo.h3" Align="Align.Center" GutterBottom="true"></MudText>
+    <MudGrid Spacing="6" Class="mt-16">
+        <MudItem xs="12">
+            <MudText Typo="Typo.h5" Class="d-flex justify-center" GutterBottom="true">Welcome to Digital Diary!</MudText>
+            <MudGrid>
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="Email" Label="Email" Variant="Variant.Outlined"/>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="Password"
+                                   Label="Password"
+                                   Variant="Variant.Outlined"
+                                   InputType="@PasswordInput"
+                                   Adornment="Adornment.End"
+                                   AdornmentIcon="@PasswordInputIcon"
+                                   OnAdornmentClick="ShowPassword"/>
+                </MudItem>
+                <MudItem xs="12" Class="d-flex justify-center">
+                    @if (!InProgress) {
+                        <MudButton Style="width: 200px; margin: 2px;" OnClick="Login" Variant="Variant.Filled" DisableElevation="true" Color="Color.Primary" Size="Size.Large" Class="mt-8">Login</MudButton>
+                        <MudButton Style="width: 200px; margin: 2px;" OnClick="OpenRegisterUserDialog" Variant="Variant.Filled" DisableElevation="true" Color="Color.Primary" Size="Size.Large" Class="mt-8">Register</MudButton>
+                    }
+                    else {
+                        <MudProgressCircular Size="Size.Large" Color="Color.Primary" Indeterminate="true"/>
+                    }
+                </MudItem>
+            </MudGrid>
+
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+@code {
+    private string Email { get; set; }
+    private string Password { get; set; }
+    private string Token { get; set; }
+    private bool InProgress { get; set; } = false;
+
+    DialogOptions maxWidth = new DialogOptions() {MaxWidth = MaxWidth.Medium, FullWidth = true};
+    DialogOptions disableBackdropClick = new DialogOptions() {DisableBackdropClick = true};
+
+    bool isShow;
+    InputType PasswordInput = InputType.Password;
+    string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+
+    void ShowPassword() {
+    @if (isShow) {
+        isShow = false;
+        PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+        PasswordInput = InputType.Password;
+    }
+    else {
+        isShow = true;
+        PasswordInputIcon = Icons.Material.Filled.Visibility;
+        PasswordInput = InputType.Text;
+    }
+    }
+
+    public async void Login() {
+        InProgress = true;
+        var client = _client.CreateClient();
+        var form = new FormLogin(Email, Password);
+        var formAsJson = JsonConvert.SerializeObject(form);
+        var response = await client.PostAsync(Route.BaseUrl + Route.Login,
+            new StringContent(formAsJson, Encoding.UTF8,
+                Common.JsonMediaType));
+
+        if (response.StatusCode == HttpStatusCode.OK) {
+            var cred = response.Content.ReadFromJsonAsync<DtoCredential>();
+            await _localStorage.SetItemAsync("token", cred.Result.Token);
+            _navigationManager.NavigateTo("/home");
+        }
+        else {
+            OpenDialog(disableBackdropClick);
+        }
+    }
+
+    private void OpenDialog(DialogOptions options) {
+        DialogService.Show<CWrongCredsDialog>("Incorrect credentials", options);
+    }
+
+    private async void OpenRegisterUserDialog() {
+        DialogService.Show<CRegisterDialog>("Register user", maxWidth);
+    }
+
+}

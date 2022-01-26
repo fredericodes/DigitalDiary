@@ -1,0 +1,28 @@
+﻿@page "/"
+@using System.Net.Http.Headers
+
+@inject NavigationManager _navigationManager
+@inject ILocalStorageService _localStorage
+@inject IHttpClientFactory _client;
+
+<CLogin/>
+
+@code {
+
+    protected override async Task OnInitializedAsync() {
+        if (await _localStorage.ContainKeyAsync(Common.TokenKey)) {
+            var client = _client.CreateClient();
+            var token = await _localStorage.GetItemAsStringAsync(Common.TokenKey);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await client.GetAsync(Route.BaseUrl + Route.AuthPing);
+
+            if (response.StatusCode == HttpStatusCode.OK) {
+                _navigationManager.NavigateTo("/home");
+            }
+            else {
+                await _localStorage.ClearAsync();
+            }
+        }
+    }
+}

@@ -1,0 +1,48 @@
+@inject IHttpClientFactory _client;
+@inject NavigationManager _navigationManager
+@inject ISnackbar Snackbar
+
+<MudDialog>
+    <DialogContent>
+        <MudTextField @bind-Value="@Email" Label="Email" Variant="Variant.Text"></MudTextField>
+        <MudTextField @bind-Value="@Password" Label="Password" Variant="Variant.Text"></MudTextField>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="RegisterUser">Update</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code{
+
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; }
+
+    public string Email { get; set; }
+    public string Password { get; set; }
+
+    async Task RegisterUser() {
+        var client = _client.CreateClient();
+        var form = new FormLogin(Email, Password);
+        var formAsJson = JsonConvert.SerializeObject(form);
+        var response = await client.PostAsync(Route.BaseUrl + Route.RegisterUser,
+            new StringContent(formAsJson, Encoding.UTF8,
+                Common.JsonMediaType));
+
+        if (response.StatusCode == HttpStatusCode.Created) {
+            Snackbar.Add("User account is created!", Severity.Success);
+            _navigationManager.NavigateTo("/");
+        }
+        else if (response.StatusCode == HttpStatusCode.Conflict) {
+            Snackbar.Add("User account with the email already exists, try login!", Severity.Error);
+            Cancel();
+        }
+        else {
+            Snackbar.Add("Could not process the request, try again later.", Severity.Error);
+            Cancel();
+        }
+    }
+
+    void Cancel() => MudDialog.Cancel();
+
+}

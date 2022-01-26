@@ -1,0 +1,78 @@
+@page "/home"
+
+@using System.Net.Http.Headers
+
+@inject ILocalStorageService _localStorage
+@inject IHttpClientFactory _client;
+@inject IDialogService DialogService
+@inject NavigationManager _navigationManager
+
+<CCalendar>
+    <DayTemplate Context="day">
+        @{
+            string currentDayClass = day.Date == DateTime.Now.Date ? "current-day" : "";
+            string selectedDayClass = day == selectedDay ? "selected-day" : "";
+        }
+
+        @if (!day.IsEmpty) {
+            <div class="day shadow-effect @currentDayClass @selectedDayClass" @onclick="() => { selectedDay = day; OpenDialog(selectedDay.Date.ToString('D'.ToString())); }">
+                <h3 class="ms-fontSize-24 ms-fontWeight-regular">
+                    @day.DayNumber
+                </h3>
+            </div>
+        }
+    </DayTemplate>
+</CCalendar>
+
+<MudItem xs="12">
+    <MudButton OnClick="Logout" Color="Color.Primary" Variant="Variant.Filled" FullWidth="true" StartIcon="@Icons.Material.Filled.Logout" Size="Size.Large">Logout</MudButton>
+</MudItem>
+
+@code {
+    DialogOptions maxWidth = new DialogOptions() {MaxWidth = MaxWidth.Medium, FullWidth = true};
+
+    private CalendarDay selectedDay = new CalendarDay() {
+        Date = DateTime.Now
+    };
+
+    protected override async Task OnInitializedAsync() {
+        if (!await _localStorage.ContainKeyAsync(Common.TokenKey)) {
+            await _localStorage.ClearAsync();
+            _navigationManager.NavigateTo("/");
+        }
+        else {
+            var client = _client.CreateClient();
+            var token = await _localStorage.GetItemAsStringAsync(Common.TokenKey);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await client.GetAsync(Route.BaseUrl + Route.AuthPing);
+
+            if (response.StatusCode != HttpStatusCode.OK) {
+                _navigationManager.NavigateTo("/");
+            }
+        }
+    }
+
+    private async void OpenDialog(string date) {
+        string TextValue = "";
+        var client = _client.CreateClient();
+        var token = await _localStorage.GetItemAsStringAsync("token");
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        var responseBody = await client.GetAsync(Route.BaseUrl + Route.ListDiaryJournals + "?date=" + date);
+        if (responseBody.StatusCode == HttpStatusCode.OK) {
+            var jsonStr = await responseBody.Content.ReadAsStringAsync();
+            var dto = JsonConvert.DeserializeObject<DtoEntry>(jsonStr);
+            TextValue = dto.Entry;
+        }
+
+        var form = new FormDiaryJournalEntry(date, TextValue);
+        var parameters = new DialogParameters {["form"] = form};
+        DialogService.Show<CListJournalEntryDialog>("Journal Entry", parameters, options: maxWidth);
+    }
+
+    public async void Logout() {
+        await _localStorage.ClearAsync();
+        _navigationManager.NavigateTo("/");
+    }
+
+}

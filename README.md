@@ -1,5 +1,5 @@
 # Diary Note
-A cloud native digital diary that allows users to add journal entries in their calendar using Golang for API's and Redis for storage. 
+A cloud native digital diary that allows users to add journal entries in their calendar using Golang for API and Redis for storage. 
 
 The application consists of Golang backend API which interacts with the frontend C# Blazor WASM user interface.
 

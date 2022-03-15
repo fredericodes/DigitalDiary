@@ -10,7 +10,7 @@
             <MudText Typo="Typo.h5" Class="d-flex justify-center" GutterBottom="true">Welcome to Digital Diary!</MudText>
             <MudGrid>
                 <MudItem xs="12">
-                    <MudTextField @bind-Value="Email" Label="Email" Variant="Variant.Outlined"/>
+                    <MudTextField @bind-Value="Username" Label="Username" Variant="Variant.Outlined"/>
                 </MudItem>
                 <MudItem xs="12">
                     <MudTextField @bind-Value="Password"
@@ -37,7 +37,7 @@
 </MudContainer>
 
 @code {
-    private string Email { get; set; }
+    private string Username { get; set; }
     private string Password { get; set; }
     private string Token { get; set; }
     private bool InProgress { get; set; } = false;
@@ -65,7 +65,7 @@
     public async void Login() {
         InProgress = true;
         var client = _client.CreateClient();
-        var form = new FormLogin(Email, Password);
+        var form = new FormLogin(Username, Password);
         var formAsJson = JsonConvert.SerializeObject(form);
         var response = await client.PostAsync(Route.BaseUrl + Route.Login,
             new StringContent(formAsJson, Encoding.UTF8,
@@ -82,11 +82,11 @@
     }
 
     private void OpenDialog(DialogOptions options) {
-        DialogService.Show<CWrongCredsDialog>("Incorrect credentials", options);
+        DialogService.Show<WrongCredsDialogComponent>("Incorrect credentials", options);
     }
 
     private async void OpenRegisterUserDialog() {
-        DialogService.Show<CRegisterDialog>("Register user", maxWidth);
+        DialogService.Show<RegisterDialogComponent>("Register user", maxWidth);
     }
 
 }

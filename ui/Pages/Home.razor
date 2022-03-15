@@ -7,7 +7,7 @@
 @inject IDialogService DialogService
 @inject NavigationManager _navigationManager
 
-<CCalendar>
+<CalendarComponent>
     <DayTemplate Context="day">
         @{
             string currentDayClass = day.Date == DateTime.Now.Date ? "current-day" : "";
@@ -22,7 +22,7 @@
             </div>
         }
     </DayTemplate>
-</CCalendar>
+</CalendarComponent>
 
 <MudItem xs="12">
     <MudButton OnClick="Logout" Color="Color.Primary" Variant="Variant.Filled" FullWidth="true" StartIcon="@Icons.Material.Filled.Logout" Size="Size.Large">Logout</MudButton>
@@ -67,7 +67,7 @@
 
         var form = new FormDiaryJournalEntry(date, TextValue);
         var parameters = new DialogParameters {["form"] = form};
-        DialogService.Show<CListJournalEntryDialog>("Journal Entry", parameters, options: maxWidth);
+        DialogService.Show<ListJournalEntryDialogComponent>("Journal Entry", parameters, options: maxWidth);
     }
 
     public async void Logout() {

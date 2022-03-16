@@ -1,26 +1,31 @@
 package repository
 
 import (
-	"errors"
+	"github.com/google/uuid"
 
-	"github.com/go-redis/redis"
+	"api/model"
 )
 
-const (
-	KeyDoesntExistsErr = "key doesnt exists"
-)
-
-func (db *Db) ReadUserExists(email string) (string, error) {
-	user, err := db.Get(email).Result()
-	if err != nil || err == redis.Nil {
-		return "", errors.New(KeyDoesntExistsErr)
+func (db *Db) ReadUserById(id uuid.UUID) (*model.User, error) {
+	user := &model.User{}
+	if err := db.Where("id = ?", id).First(user).Error; err != nil {
+		return nil, err
 	}
 
 	return user, nil
 }
 
-func (db *Db) CreateUser(email string, user []byte) error {
-	if err := db.Set(email, user, 0).Err(); err != nil {
+func (db *Db) ReadUserByUsername(username string) (*model.User, error) {
+	user := &model.User{}
+	if err := db.Where("username = ?", username).First(user).Error; err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+
+func (db *Db) CreateUser(user *model.User) error {
+	if err := db.Create(user).Error; err != nil {
 		return err
 	}
 

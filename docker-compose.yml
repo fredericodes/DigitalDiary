@@ -18,14 +18,29 @@ services:
       dockerfile: ./api/docker/Dockerfile
     ports:
       - 7000:8080
+    env_file:
+      - api/.env
+    entrypoint: ["/bin/sh","-c"]
+    command: 
+      - | 
+          while ! nc -z db 5432; 
+          do sleep 1; 
+          done;
+          ./migration up;
+          chmod +x ./main;
+          ./main;
     depends_on:
-      - redis
+      - db
     restart: always
 
-  redis:
-    image: redis:alpine
+  db:
+    image: postgres:13-alpine
+    environment:
+      POSTGRES_DB: diarynote_db
+      POSTGRES_USER: diarynote_user
+      POSTGRES_PASSWORD: diarynote_pass
     ports:
-      - 6379:6379
+      - "5432:5432"
     volumes:
-      - ./api/util/configs/redis.conf:/redis.conf
-    command: [ "redis-server", "/redis.conf" ]
+      - ~/postgres/data/db:/var/lib/postgresql/data
+    restart: always

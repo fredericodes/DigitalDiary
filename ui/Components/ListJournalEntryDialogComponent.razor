@@ -1,0 +1,72 @@
+@using System.Net.Http.Headers
+@inject ILocalStorageService _localStorage
+@inject IHttpClientFactory _client;
+@inject ISnackbar Snackbar
+@inject NavigationManager _navigationManager
+
+
+<MudDialog>
+    <DialogContent>
+        <MudContainer Style="max-height: 100%; overflow-y: scroll">
+             @form.Date
+             @if (TextValue.Length == 0)
+             {
+                 <MudTextField @bind-Value="@TextValue" FullWidth="true" Label="Add or update notes" Variant="Variant.Filled" Lines="20">
+                 </MudTextField>
+             }
+             else
+             {
+                 <MudTextField @bind-Value="@TextValue" FullWidth="true" Label="Add or update notes" Variant="Variant.Filled" Lines="20">
+                 </MudTextField>
+             }
+             <DialogActions>
+                 <MudButton Color="Color.Primary" OnClick="Update">Update</MudButton>
+                 <MudButton OnClick="Cancel">Cancel</MudButton>
+             </DialogActions>
+         </MudContainer>
+    </DialogContent>
+</MudDialog>
+
+@code {
+
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public FormDiaryJournalEntry form { get; set; }
+
+    public string TextValue { get; set; }
+
+    protected override void OnInitialized() {
+        TextValue = form.Content;
+    }
+
+    async Task Update() {
+        if (TextValue.Equals(""))
+        {
+            Snackbar.Add("Journal entry could not be added! Add some notes.", Severity.Error);
+        }
+        else
+        {
+            var client = _client.CreateClient();
+            var entry = new FormDiaryJournalEntry(form.Date, TextValue);
+            var token = await _localStorage.GetItemAsync<string>("token");
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var formAsJson = JsonConvert.SerializeObject(entry);
+            var response = await client.PostAsync(Route.BaseUrl + Route.CreateOrUpdateDiaryJournals,
+                new StringContent(formAsJson, Encoding.UTF8,
+                    Common.JsonMediaType));
+
+            if (response.StatusCode == HttpStatusCode.Created) {
+                Snackbar.Add("Journal entry is added!", Severity.Success);
+                _navigationManager.NavigateTo("/home");
+            }
+            else {
+                Snackbar.Add("Journal entry could not be added!", Severity.Error);
+            } 
+        }
+    }
+    
+    void Cancel() => MudDialog.Cancel();
+}

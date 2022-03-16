@@ -6,9 +6,9 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/FreddyJilson/diarynote/model"
-	"github.com/FreddyJilson/diarynote/util/auth"
-	"github.com/FreddyJilson/diarynote/util/configs"
+	"api/model"
+	"api/util/auth"
+	"api/util/configs"
 )
 
 func (srv *Server) HandleLogin(w http.ResponseWriter, r *http.Request) {
@@ -34,7 +34,7 @@ func (srv *Server) HandleLogin(w http.ResponseWriter, r *http.Request) {
 		tx.Rollback()
 
 		w.WriteHeader(http.StatusUnauthorized)
-		w.Write([]byte(fmt.Sprintf(`{"error": "%s"}`, errUserEmailDoesntExistsErr)))
+		w.Write([]byte(fmt.Sprintf(`{"error": "%s"}`, errUserDoesntExistsErr)))
 		return
 	}
 

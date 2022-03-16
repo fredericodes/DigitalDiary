@@ -1,11 +1,12 @@
 package repository
 
 import (
-	"github.com/FreddyJilson/diarynote/model"
-	"github.com/FreddyJilson/diarynote/util/configs"
-
+	"github.com/google/uuid"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+
+	"api/model"
+	"api/util/configs"
 )
 
 const (
@@ -45,6 +46,11 @@ type DB interface {
 	Commit()
 	Rollback()
 
+	ReadUserById(id uuid.UUID) (*model.User, error)
 	ReadUserByUsername(username string) (*model.User, error)
 	CreateUser(user *model.User) error
+
+	ReadJournalExistsByUserIdAndEntryDate(id uuid.UUID, entryDate string) (*model.Journal, error)
+	CreateJournal(journal *model.Journal) error
+	UpdateJournalContentByUserIdAndEntryDate(userId uuid.UUID, entryDate string, content string) (int64, error)
 }

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/FreddyJilson/diarynote/server"
-	"github.com/FreddyJilson/diarynote/util/configs"
+	"api/server"
+	"api/util/configs"
 )
 
 func main() {

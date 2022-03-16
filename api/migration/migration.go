@@ -10,7 +10,7 @@ import (
 	"github.com/jackc/pgx/v4/stdlib"
 	"github.com/pressly/goose"
 
-	 "github.com/FreddyJilson/diarynote/util/configs"
+	"api/util/configs"
 )
 
 const dialect = "postgres"

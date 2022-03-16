@@ -4,28 +4,29 @@
 @inject ISnackbar Snackbar
 @inject NavigationManager _navigationManager
 
-
+<MudContainer Style="max-height: 100%; overflow-y: scroll">
 <MudDialog>
     <DialogContent>
         <MudContainer Style="max-height: 100%; overflow-y: scroll">
-             @form.Date
-             @if (TextValue.Length == 0)
-             {
-                 <MudTextField @bind-Value="@TextValue" FullWidth="true" Label="Add or update notes" Variant="Variant.Filled" Lines="20">
-                 </MudTextField>
-             }
-             else
-             {
-                 <MudTextField @bind-Value="@TextValue" FullWidth="true" Label="Add or update notes" Variant="Variant.Filled" Lines="20">
-                 </MudTextField>
-             }
-             <DialogActions>
-                 <MudButton Color="Color.Primary" OnClick="Update">Update</MudButton>
-                 <MudButton OnClick="Cancel">Cancel</MudButton>
-             </DialogActions>
-         </MudContainer>
+            @form.Date
+            @if (TextValue.Length == 0)
+            {
+                <MudTextField @bind-Value="@TextValue" FullWidth="true" Label="Add or update notes" Variant="Variant.Filled" Lines="20">
+                </MudTextField>
+            }
+            else
+            {
+                <MudTextField @bind-Value="@TextValue" FullWidth="true" Label="Add or update notes" Variant="Variant.Filled" Lines="20">
+                </MudTextField>
+            }
+            <DialogActions>
+                <MudButton Color="Color.Primary" OnClick="Update">Update</MudButton>
+                <MudButton OnClick="Cancel">Cancel</MudButton>
+            </DialogActions>
+        </MudContainer>
     </DialogContent>
 </MudDialog>
+</MudContainer>
 
 @code {
 

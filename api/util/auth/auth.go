@@ -8,7 +8,7 @@ import (
 	"golang.org/x/crypto/argon2"
 	"strings"
 
-	"github.com/FreddyJilson/diarynote/util/configs"
+	"api/util/configs"
 )
 
 func GeneratePassword(c *configs.PasswordConf, password string) (string, error) {

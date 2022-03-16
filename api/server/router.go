@@ -26,8 +26,8 @@ func InitializeServerRoutes(srv *Server) http.Handler {
 
 	// Api v1 routes
 	apiV1 := router.PathPrefix("/api/v1").Subrouter()
-	apiV1.HandleFunc("/journal-entries", Authenticate(srv.HandleListDiaryJournals)).Methods(http.MethodGet)
-	apiV1.HandleFunc("/journal-entries", Authenticate(srv.HandleCreateOrUpdateDiaryJournals)).Methods(http.MethodPost)
+	apiV1.HandleFunc("/journal", Authenticate(srv.HandleListJournal)).Methods(http.MethodGet)
+	apiV1.HandleFunc("/journal", Authenticate(srv.HandleCreateOrUpdateJournal)).Methods(http.MethodPost)
 
 	apiV1.HandleFunc("/server-auth-ping", Authenticate(srv.HandleAuthPing)).Methods(http.MethodGet)
 

@@ -1,6 +1,6 @@
 {
-  "name": "Freya",
-  "short_name": "Freya",
+  "name": "Diarynote",
+  "short_name": "Diarynote",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#ffffff",

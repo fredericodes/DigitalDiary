@@ -7,8 +7,8 @@ namespace ui.Api {
         public static readonly string RegisterUser = AuthRoute + "/register";
 
         public static readonly string ApiV1Route = "/api/v1";
-        public static readonly string ListDiaryJournals = ApiV1Route + "/journal-entries";
-        public static readonly string CreateOrUpdateDiaryJournals = ApiV1Route + "/journal-entries";
+        public static readonly string ListDiaryJournals = ApiV1Route + "/journal";
+        public static readonly string CreateOrUpdateDiaryJournals = ApiV1Route + "/journal";
         public static readonly string AuthPing = ApiV1Route + "/server-auth-ping";
     }
 }

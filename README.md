@@ -12,7 +12,7 @@ With Digital Diary:
 * Set and achieve your goals.
 * Record your ideas.
 * Allow yourself to self reflect.
-* In corporate settings, use it to take meeting notes.
+* In corporate settings, use it to take meeting notes in meetings.
 
 And many other different usecases!
 

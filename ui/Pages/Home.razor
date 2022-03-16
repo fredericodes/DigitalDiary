@@ -29,7 +29,7 @@
 </MudItem>
 
 @code {
-    DialogOptions maxWidth = new DialogOptions() {MaxWidth = MaxWidth.Medium, FullWidth = true};
+    DialogOptions fullScreen = new DialogOptions() { FullScreen = true, CloseButton = true };
 
     private CalendarDay selectedDay = new CalendarDay() {
         Date = DateTime.Now
@@ -67,7 +67,7 @@
 
         var form = new FormDiaryJournalEntry(date, TextValue);
         var parameters = new DialogParameters {["form"] = form};
-        DialogService.Show<ListJournalEntryDialogComponent>("Journal Entry", parameters, options: maxWidth);
+        DialogService.Show<ListJournalEntryDialogComponent>("Journal Entry", parameters, options: fullScreen);
     }
 
     public async void Logout() {

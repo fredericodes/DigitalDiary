@@ -41,4 +41,6 @@ services:
       POSTGRES_PASSWORD: diarynote_pass
     ports:
       - "5432:5432"
+    volumes:
+      - ~/postgres/data/db:/var/lib/postgresql/data
     restart: always

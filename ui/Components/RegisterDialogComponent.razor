@@ -34,7 +34,7 @@
             _navigationManager.NavigateTo("/");
         }
         else if (response.StatusCode == HttpStatusCode.Conflict) {
-            Snackbar.Add("User account with the email already exists, try login!", Severity.Error);
+            Snackbar.Add("User account with the username already exists, try login!", Severity.Error);
             Cancel();
         }
         else {

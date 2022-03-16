@@ -73,7 +73,7 @@
 
         if (response.StatusCode == HttpStatusCode.OK) {
             var cred = response.Content.ReadFromJsonAsync<DtoCredential>();
-            await _localStorage.SetItemAsync("token", cred.Result.Token);
+            await _localStorage.SetItemAsStringAsync("token", cred.Result.Token);
             _navigationManager.NavigateTo("/home");
         }
         else {

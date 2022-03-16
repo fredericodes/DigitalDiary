@@ -4,12 +4,12 @@
 
 <MudDialog>
     <DialogContent>
-        <MudTextField @bind-Value="@Email" Label="Email" Variant="Variant.Text"></MudTextField>
+        <MudTextField @bind-Value="@Username" Label="Username" Variant="Variant.Text"></MudTextField>
         <MudTextField @bind-Value="@Password" Label="Password" Variant="Variant.Text"></MudTextField>
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Cancel</MudButton>
-        <MudButton Color="Color.Primary" OnClick="RegisterUser">Update</MudButton>
+        <MudButton Color="Color.Primary" OnClick="RegisterUser">Register account</MudButton>
     </DialogActions>
 </MudDialog>
 
@@ -18,12 +18,12 @@
     [CascadingParameter]
     MudDialogInstance MudDialog { get; set; }
 
-    public string Email { get; set; }
+    public string Username { get; set; }
     public string Password { get; set; }
 
     async Task RegisterUser() {
         var client = _client.CreateClient();
-        var form = new FormLogin(Email, Password);
+        var form = new FormLogin(Username, Password);
         var formAsJson = JsonConvert.SerializeObject(form);
         var response = await client.PostAsync(Route.BaseUrl + Route.RegisterUser,
             new StringContent(formAsJson, Encoding.UTF8,

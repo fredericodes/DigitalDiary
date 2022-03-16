@@ -1,12 +1,8 @@
 package server
 
 import (
-	"fmt"
-	"net/http"
-
 	"github.com/FreddyJilson/diarynote/repository"
 	"github.com/FreddyJilson/diarynote/util/configs"
-	"github.com/FreddyJilson/diarynote/util/logger"
 )
 
 const (
@@ -22,17 +18,12 @@ const (
 )
 
 type Server struct {
-	RedisDb *repository.Db
-	Logger  *logger.Logger
+	DB repository.DB
 }
 
 func New(configs *configs.Configs) *Server {
 	return &Server{
-		RedisDb: repository.New(configs.RedisDbConf),
-		Logger:  logger.New(),
+		DB: repository.New(configs.DbConf),
 	}
 }
 
-func requestLogInfo(r *http.Request, reqBody []byte) string {
-	return fmt.Sprintf("%v %v %v %v\n%v\n%v\n", r.Host, r.RemoteAddr, r.Method, r.URL, r.Header, string(reqBody))
-}

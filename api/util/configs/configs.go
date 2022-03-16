@@ -1,20 +1,16 @@
 package configs
 
 import (
+	"fmt"
 	"os"
 	"strconv"
 
 	"github.com/joeshaw/envdecode"
-	"github.com/joho/godotenv"
-)
-
-const (
-	NoRedisPasswordSet = "nil"
 )
 
 type Configs struct {
+	DbConf       *DbConf
 	ServerConf   *ServerConf
-	RedisDbConf  *RedisConf
 	PasswordConf *PasswordConf
 	JwtConf      *JwtConf
 }
@@ -23,10 +19,12 @@ type ServerConf struct {
 	Port int `env:"SERVER_PORT,required"`
 }
 
-type RedisConf struct {
-	RedisAddr     string `env:"REDIS_ADDR,required"`
-	RedisPassword string `env:"REDIS_PASSWORD"`
-	RedisDb       int    `env:"REDIS_DB,required"`
+type DbConf struct {
+	Host     string `env:"DB_HOST,required"`
+	Port     int    `env:"DB_PORT,required"`
+	Username string `env:"DB_USER,required"`
+	Password string `env:"DB_PASS,required"`
+	DbName   string `env:"DB_NAME,required"`
 }
 
 type PasswordConf struct {
@@ -41,22 +39,13 @@ type JwtConf struct {
 }
 
 func LoadConfigs() (*Configs, error) {
-	godotenv.Load(".env")
-
 	var serverConf ServerConf
-	var dbConf RedisConf
 	var passwordConf PasswordConf
 	var jwtConf JwtConf
+	var dbConf DbConf
 
 	if err := envdecode.Decode(&serverConf); err != nil {
 		return nil, err
-	}
-
-	if err := envdecode.Decode(&dbConf); err != nil {
-		return nil, err
-	}
-	if dbConf.RedisPassword == NoRedisPasswordSet {
-		dbConf.RedisPassword = ""
 	}
 
 	if err := envdecode.Decode(&passwordConf); err != nil {
@@ -67,11 +56,15 @@ func LoadConfigs() (*Configs, error) {
 		return nil, err
 	}
 
+	if err := envdecode.Decode(&dbConf); err != nil {
+		return nil, err
+	}
+
 	return &Configs{
 		ServerConf:   &serverConf,
-		RedisDbConf:  &dbConf,
 		PasswordConf: &passwordConf,
 		JwtConf:      &jwtConf,
+		DbConf:       &dbConf,
 	}, nil
 }
 
@@ -87,4 +80,11 @@ func ReadPasswordEnvConfigs() *PasswordConf {
 		Threads: uint8(threads),
 		KeyLen:  uint32(keyLen),
 	}
+}
+
+func (c *DbConf) ToDsnString() string {
+	return fmt.Sprintf(
+		"host=%s user=%s password=%s dbname=%s port=%d sslmode=disable",
+		c.Host, c.Username, c.Password, c.DbName, c.Port,
+	)
 }

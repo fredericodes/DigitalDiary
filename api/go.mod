@@ -1,4 +1,4 @@
-module github.com/FreddyJilson/diarynote
+module api
 
 go 1.17
 

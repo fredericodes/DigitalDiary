@@ -6,7 +6,7 @@ WORKDIR /app
 
 # Copy the source from the current directory to the Working Directory inside the container
 COPY ./api .
-COPY ./migration ./migration
+COPY ./api/migration ./migration
 
 
 RUN go mod tidy

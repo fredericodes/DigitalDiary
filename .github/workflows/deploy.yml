@@ -21,7 +21,7 @@ jobs:
             export BASE_URL="http://${{ secrets.LINODE_IP }}:7000"
 
             # Navigate to the app directory
-            APP_DIR="/root/app"
+            APP_DIR="/root/DigitalDiary"
             if [ -d "$APP_DIR/.git" ]; then
               echo "Repository exists. Pulling latest changes..."
               cd "$APP_DIR"

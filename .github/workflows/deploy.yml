@@ -3,35 +3,38 @@ name: Deploy to Linode
 on:
   push:
     branches:
-      - master
-  workflow_dispatch:
+      - master  # Use master branch
+  workflow_dispatch:  # Allow manual triggering
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      # Step 1: Deploy to Linode via SSH
       - name: Deploy to Linode
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.LINODE_IP }}
           username: root
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          env:
+            BASE_URL: http://${{ secrets.LINODE_IP }}:7000  # Set BASE_URL here
           script: |
-            # Navigate to the root directory
-            APP_DIR="/root/DigitalDiary"
+            # Navigate to the app directory
+            APP_DIR="/root/app"
             if [ -d "$APP_DIR/.git" ]; then
               echo "Repository exists. Pulling latest changes..."
               cd "$APP_DIR"
               git fetch --all
-              git reset --hard origin/master  # Use master branch
+              git reset --hard origin/master
               git pull https://${{ secrets.PAT }}@github.com/fredericodes/DigitalDiary.git master  # Use PAT for private repo
             else
               echo "Repository does not exist. Cloning repository..."
               git clone https://${{ secrets.PAT }}@github.com/fredericodes/DigitalDiary.git "/root"  # Use PAT for private repo
             fi
 
-            # Set BASE_URL environment variable
-             export BASE_URL="http://${{ secrets.LINODE_IP }}:7000"
+            # Debug: Print BASE_URL
+            echo "BASE_URL is set to: $BASE_URL"
 
             # Stop and remove existing containers
             cd "$APP_DIR"
@@ -42,3 +45,7 @@ jobs:
 
             # Build and start the services with BASE_URL
             docker-compose up -d --build
+
+            # Debug: Check container logs
+            docker-compose logs ui
+            docker-compose logs api

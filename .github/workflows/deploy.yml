@@ -33,7 +33,7 @@ jobs:
 
             # Update BaseUrl in Route.cs (inside the cloned repo)
             LINODE_IP=${{ secrets.LINODE_IP }}
-            sed -i "s|http://localhost:7000|http://${LINODE_IP}:7000|g" ui/api/Route.cs
+            sed -i "s|http://localhost:7000|http://${LINODE_IP}:7000|g" $APP_DIR/ui/api/Route.cs
 
             # Stop and remove existing containers
             docker-compose down

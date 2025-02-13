@@ -1,14 +1,13 @@
 version: '3'
 
 services:
+
   ui:
     build:
       context: .
       dockerfile: ./ui/Docker/Dockerfile
     ports:
       - 7001:80
-    environment:
-      - BASE_URL=${BASE_URL}  # Pass BASE_URL here
     depends_on:
       - api
     restart: always
@@ -21,8 +20,6 @@ services:
       - 7000:8080
     env_file:
       - api/.env
-    environment:
-      - BASE_URL=${BASE_URL}  # Pass BASE_URL here
     entrypoint: ["/bin/sh","-c"]
     command: 
       - | 

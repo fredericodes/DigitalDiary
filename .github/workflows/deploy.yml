@@ -18,8 +18,6 @@ jobs:
           username: root
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            export BASE_URL="http://${{ secrets.LINODE_IP }}:7000"
-
             # Navigate to the app directory
             APP_DIR="/root/DigitalDiary"
             if [ -d "$APP_DIR/.git" ]; then
@@ -30,11 +28,17 @@ jobs:
               git pull https://${{ secrets.PAT }}@github.com/fredericodes/DigitalDiary.git master  # Use PAT for private repo
             else
               echo "Repository does not exist. Cloning repository..."
-              git clone https://${{ secrets.PAT }}@github.com/fredericodes/DigitalDiary.git "/root"  # Use PAT for private repo
+              git clone https://${{ secrets.PAT }}@github.com/fredericodes/DigitalDiary.git "$APP_DIR"  # Use PAT for private repo
+              cd "$APP_DIR"
             fi
 
-            # Debug: Print BASE_URL
-            echo "BASE_URL is set to: $BASE_URL"
+            # Update BaseUrl in Route.cs using perl
+            LINODE_IP=${{ secrets.LINODE_IP }}
+            perl -pi -e "s|http://localhost:7000|http://${LINODE_IP}:7000|g" "$APP_DIR/ui/Api/Route.cs"
+
+            # Debug: Print the updated Route.cs file
+            echo "Updated Route.cs file:"
+            cat "$APP_DIR/ui/Api/Route.cs"
 
             # Stop and remove existing containers
             cd "$APP_DIR"
@@ -43,7 +47,7 @@ jobs:
             # Clean up unused Docker resources
             docker system prune -a --volumes -f
 
-            # Build and start the services with BASE_URL
+            # Build and start the services
             docker-compose up -d --build
 
             # Debug: Check container logs

@@ -17,9 +17,9 @@ jobs:
           host: ${{ secrets.LINODE_IP }}
           username: root
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          env:
-            BASE_URL: http://${{ secrets.LINODE_IP }}:7000  # Set BASE_URL here
           script: |
+            export BASE_URL="http://${{ secrets.LINODE_IP }}:7000"
+
             # Navigate to the app directory
             APP_DIR="/root/app"
             if [ -d "$APP_DIR/.git" ]; then

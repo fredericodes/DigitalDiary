@@ -8,7 +8,7 @@ services:
     ports:
       - 7001:80
     environment:
-      - BASE_URL=http://${{ secrets.LINODE_IP }}:7000  # Pass BASE_URL here
+      - BASE_URL=${BASE_URL}  # Pass BASE_URL here
     depends_on:
       - api
     restart: always
@@ -22,7 +22,7 @@ services:
     env_file:
       - api/.env
     environment:
-      - BASE_URL=http://${{ secrets.LINODE_IP }}:7000  # Pass BASE_URL here
+      - BASE_URL=${BASE_URL}  # Pass BASE_URL here
     entrypoint: ["/bin/sh","-c"]
     command: 
       - | 

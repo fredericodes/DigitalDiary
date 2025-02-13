@@ -18,7 +18,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             # Navigate to the root directory
-            APP_DIR="~/DigitalDiary"
+            APP_DIR="/root/DigitalDiary"
             if [ -d "$APP_DIR/.git" ]; then
               echo "Repository exists. Pulling latest changes..."
               cd "$APP_DIR"
@@ -27,7 +27,7 @@ jobs:
               git pull https://${{ secrets.PAT }}@github.com/fredericodes/DigitalDiary.git master  # Use PAT for private repo
             else
               echo "Repository does not exist. Cloning repository..."
-              git clone https://${{ secrets.PAT }}@github.com/fredericodes/DigitalDiary.git "~/"  # Use PAT for private repo
+              git clone https://${{ secrets.PAT }}@github.com/fredericodes/DigitalDiary.git "/root"  # Use PAT for private repo
             fi
 
             # Update BaseUrl in Route.cs (inside the cloned repo)

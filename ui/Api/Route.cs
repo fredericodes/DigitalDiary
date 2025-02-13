@@ -1,6 +1,7 @@
 namespace ui.Api {
     public static class Route {
-        public static readonly string BaseUrl = "http://localhost:7000";
+        // Read BaseUrl from environment variable
+        public static readonly string BaseUrl = Environment.GetEnvironmentVariable("BASE_URL") ?? "http://localhost:7000";
 
         public static readonly string AuthRoute = "/auth";
         public static readonly string Login = AuthRoute + "/login";

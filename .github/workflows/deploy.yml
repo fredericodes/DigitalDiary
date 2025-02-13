@@ -30,15 +30,15 @@ jobs:
               git clone https://${{ secrets.PAT }}@github.com/fredericodes/DigitalDiary.git "/root"  # Use PAT for private repo
             fi
 
-            # Update BaseUrl in Route.cs (inside the cloned repo)
-            LINODE_IP=${{ secrets.LINODE_IP }}
-            sed -i "s|public static readonly string BaseUrl = \"http://localhost:7000\";|public static readonly string BaseUrl = \"http://${LINODE_IP}:7000\";|g" $APP_DIR/ui/api/Route.cs
+            # Set BASE_URL environment variable
+             export BASE_URL="http://${{ secrets.LINODE_IP }}:7000"
 
             # Stop and remove existing containers
+            cd "$APP_DIR"
             docker-compose down
 
             # Clean up unused Docker resources
             docker system prune -a --volumes -f
 
-            # Build and start the services
+            # Build and start the services with BASE_URL
             docker-compose up -d --build

@@ -1,3 +1,5 @@
+using System;
+
 namespace ui.Api {
     public static class Route {
         // Read BaseUrl from environment variable

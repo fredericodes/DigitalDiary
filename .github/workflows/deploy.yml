@@ -3,25 +3,13 @@ name: Deploy to Linode
 on:
   push:
     branches:
-      - main
-  workflow_dispatch:    
+      - master
+  workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      # Step 1: Checkout the code
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      # Step 2: Replace "localhost" with Linode IP in Route.cs
-      - name: Update BaseUrl in Route.cs
-        run: |
-          LINODE_IP=${{ secrets.LINODE_IP }}
-          sed -i "s|http://localhost:7000|http://${LINODE_IP}:7000|g" ui/api/Route.cs
-        shell: bash
-
-      # Step 3: Deploy to Linode via SSH
       - name: Deploy to Linode
         uses: appleboy/ssh-action@master
         with:
@@ -29,17 +17,29 @@ jobs:
           username: root
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            # Navigate to the root directory
+            APP_DIR="/root"
+            if [ -d "$APP_DIR/.git" ]; then
+              echo "Repository exists. Pulling latest changes..."
+              cd "$APP_DIR"
+              git fetch --all
+              git reset --hard origin/master  # Use master branch
+              git pull https://${{ secrets.PAT }}@github.com/your-username/your-repo.git master  # Use PAT for private repo
+            else
+              echo "Repository does not exist. Cloning repository..."
+              git clone https://${{ secrets.PAT }}@github.com/your-username/your-repo.git "$APP_DIR"  # Use PAT for private repo
+              cd "$APP_DIR"
+            fi
+
+            # Update BaseUrl in Route.cs (inside the cloned repo)
+            LINODE_IP=${{ secrets.LINODE_IP }}
+            sed -i "s|http://localhost:7000|http://${LINODE_IP}:7000|g" ui/api/Route.cs
+
             # Stop and remove existing containers
             docker-compose down
 
             # Clean up unused Docker resources
             docker system prune -a --volumes -f
 
-            # Copy the updated code to the Linode instance
-            rm -rf /root/app
-            mkdir -p /root/app
-            tar -czf - . | ssh root@${{ secrets.LINODE_IP }} "tar -xzf - -C /root/app"
-
-            # Navigate to the app directory and build/start the services
-            cd /root/app
+            # Build and start the services
             docker-compose up -d --build

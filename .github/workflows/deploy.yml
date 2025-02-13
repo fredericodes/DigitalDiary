@@ -1,0 +1,44 @@
+name: Deploy to Linode
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Replace "localhost" with Linode IP in Route.cs
+      - name: Update BaseUrl in Route.cs
+        run: |
+          LINODE_IP=${{ secrets.LINODE_IP }}
+          sed -i "s|http://localhost:7000|http://${LINODE_IP}:7000|g" ui/api/Route.cs
+        shell: bash
+
+      # Step 3: Deploy to Linode via SSH
+      - name: Deploy to Linode
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.LINODE_IP }}
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            # Stop and remove existing containers
+            docker-compose down
+
+            # Clean up unused Docker resources
+            docker system prune -a --volumes -f
+
+            # Copy the updated code to the Linode instance
+            rm -rf /root/app
+            mkdir -p /root/app
+            tar -czf - . | ssh root@${{ secrets.LINODE_IP }} "tar -xzf - -C /root/app"
+
+            # Navigate to the app directory and build/start the services
+            cd /root/app
+            docker-compose up -d --build

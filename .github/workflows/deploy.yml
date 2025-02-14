@@ -25,10 +25,10 @@ jobs:
               cd "$APP_DIR"
               git fetch --all
               git reset --hard origin/master
-              git pull https://${{ secrets.PAT }}@github.com/fredericodes/DigitalDiary.git master  # Use PAT for private repo
+              git pull https://github.com/fredericodes/DigitalDiary.git master
             else
               echo "Repository does not exist. Cloning repository..."
-              git clone https://${{ secrets.PAT }}@github.com/fredericodes/DigitalDiary.git "$APP_DIR"  # Use PAT for private repo
+              git pull https://github.com/fredericodes/DigitalDiary.git master
               cd "$APP_DIR"
             fi
 

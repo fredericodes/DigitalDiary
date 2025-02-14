@@ -28,7 +28,7 @@ jobs:
               git pull https://github.com/fredericodes/DigitalDiary.git master
             else
               echo "Repository does not exist. Cloning repository..."
-              git clone https://github.com/fredericodes/DigitalDiary.git master
+              git clone https://github.com/fredericodes/DigitalDiary.git
               cd "$APP_DIR"
             fi
 

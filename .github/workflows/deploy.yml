@@ -44,15 +44,9 @@ jobs:
             cd "$APP_DIR"
             docker-compose down
 
-            # rebuild image
-            docker-compose build
-
             # Build and start the services
             docker-compose up -d --build
 
             # Clean up unused Docker resources
             docker system prune -a --volumes -f
-
-            # Debug: Check container logs
-            docker-compose logs ui
-            docker-compose logs api
+            

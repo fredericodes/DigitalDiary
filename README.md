@@ -25,3 +25,5 @@ And many other different usecases!
 
 ## Demo
 https://diary.fredericodes.online
+
+[Watch the video](https://fredericodes.github.io/Demo/DigitalDiary.webm)

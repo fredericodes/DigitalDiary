@@ -24,4 +24,4 @@ And many other different usecases!
 4. In browser, go to `http://localhost:7001` to view diary note application.
 
 ## Demo
-https://app.diarynote.net
+https://diary.fredericodes.online

@@ -33,8 +33,8 @@ jobs:
             fi
 
             # Update BaseUrl in Route.cs using perl
-            LINODE_IP=${{ secrets.LINODE_IP }}
-            perl -pi -e "s|http://localhost:7000|http://${LINODE_IP}:7000|g" "$APP_DIR/ui/Api/Route.cs"
+            API_DOMAIN=${{ secrets.API_DOMAIN }}
+            perl -pi -e "s|http://localhost:7000|https://${API_DOMAIN}|g" "$APP_DIR/ui/Api/Route.cs"
 
             # Debug: Print the updated Route.cs file
             echo "Updated Route.cs file:"
@@ -44,11 +44,14 @@ jobs:
             cd "$APP_DIR"
             docker-compose down
 
-            # Clean up unused Docker resources
-            docker system prune -a --volumes -f
+            # rebuild image
+            docker-compose build
 
             # Build and start the services
             docker-compose up -d --build
+
+            # Clean up unused Docker resources
+            docker system prune -a --volumes -f
 
             # Debug: Check container logs
             docker-compose logs ui
